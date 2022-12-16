@@ -12,12 +12,14 @@ export const Language = {
   securityLabel: "Security",
   sshKeysLabel: "SSH keys",
   settingsLabel: "Settings",
+  tokensLabel: "Tokens",
 }
 
 const menuItems = [
   { label: Language.accountLabel, path: "/settings/account" },
   { label: Language.securityLabel, path: "/settings/security" },
   { label: Language.sshKeysLabel, path: "/settings/ssh-keys" },
+  { label: Language.tokensLabel, path: "/settings/tokens" },
 ]
 
 export const SettingsLayout: FC = () => {
