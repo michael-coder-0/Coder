@@ -88,7 +88,7 @@ if [[ -z $increment ]]; then
 fi
 
 # Make sure the repository is up-to-date before generating release notes.
-log "Fetching main and tags from origin..."
+log "Fetching $branch and tags from origin..."
 git fetch --quiet --tags origin "$branch"
 
 # Resolve to the latest ref on origin/main unless otherwise specified.
@@ -104,7 +104,6 @@ fi
 mapfile -t versions < <(gh api -H "Accept: application/vnd.github+json" /repos/coder/coder/git/refs/tags -q '.[].ref | split("/") | .[2]' | grep '^v' | sort -r -V)
 old_version=${versions[0]}
 
-log "Checking commit metadata for changes since $old_version..."
 # shellcheck source=scripts/release/check_commit_metadata.sh
 source "$SCRIPT_DIR/release/check_commit_metadata.sh" "$old_version" "$ref"
 
