@@ -6,35 +6,35 @@ source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 cdroot
 
 help() {
-	cat <<-EOH
-		Usage: ./release.sh [--branch <name>] [--draft] [--dry-run] [--ref <ref>] [--major | --minor | --patch]
+	cat <<EOH
+Usage: ./release.sh [--branch <name>] [--draft] [--dry-run] [--ref <ref>] [--major | --minor | --patch]
 
-		This script should be called to create a new release.
+This script should be called to create a new release.
 
-		When run, this script will display the new version number and optionally a
-		preview of the release notes. The new version will be selected automatically
-		based on if the release contains breaking changes or not. If the release
-		contains breaking changes, a new minor version will be created. Otherwise, a
-		new patch version will be created.
+When run, this script will display the new version number and optionally a
+preview of the release notes. The new version will be selected automatically
+based on if the release contains breaking changes or not. If the release
+contains breaking changes, a new minor version will be created. Otherwise, a
+new patch version will be created.
 
-		Set --ref if you need to specify a specific commit that the new version will
-		be tagged at, otherwise the latest commit will be used.
+Set --ref if you need to specify a specific commit that the new version will
+be tagged at, otherwise the latest commit will be used.
 
-		Set --minor to force a minor version bump, even when there are no breaking
-		changes. Likewise for --major. By default a patch version will be created.
+Set --minor to force a minor version bump, even when there are no breaking
+changes. Likewise for --major. By default a patch version will be created.
 
-		Set --dry-run to run the release workflow in CI as a dry-run (no release will
-		be created).
+Set --dry-run to run the release workflow in CI as a dry-run (no release will
+be created).
 
-		To mark a release as containing breaking changes, the commit title should
-		either contain a known prefix with an exclamation mark ("feat!:",
-		"feat(api)!:") or the PR that was merged can be tagged with the
-		"release/breaking" label.
+To mark a release as containing breaking changes, the commit title should
+either contain a known prefix with an exclamation mark ("feat!:",
+"feat(api)!:") or the PR that was merged can be tagged with the
+"release/breaking" label.
 
-		To test changes to this script, you can set --branch <my-branch>, which will
-		run the release workflow in CI as a dry-run and use the latest commit on the
-		specified branch as the release commit. This will also set --dry-run.
-	EOH
+To test changes to this script, you can set --branch <my-branch>, which will
+run the release workflow in CI as a dry-run and use the latest commit on the
+specified branch as the release commit. This will also set --dry-run.
+EOH
 }
 
 branch=main
