@@ -26,11 +26,6 @@ if [[ -z $to_ref ]]; then
 	error "No to_ref specified"
 fi
 
-ignore_missing_metadata=${CODER_IGNORE_MISSING_COMMIT_METADATA:-0}
-if [[ $ignore_missing_metadata == 1 ]]; then
-	log "WARNING: Ignoring missing commit metadata, breaking changes may be missed."
-fi
-
 range="$from_ref..$to_ref"
 
 # Check dependencies.
@@ -38,6 +33,10 @@ dependencies gh
 
 COMMIT_METADATA_BREAKING=0
 declare -A COMMIT_METADATA_TITLE COMMIT_METADATA_CATEGORY
+
+# This environment variable can be set to 1 to ignore missing commit metadata,
+# useful for dry-runs.
+ignore_missing_metadata=${CODER_IGNORE_MISSING_COMMIT_METADATA:-0}
 
 main() {
 	# Match a commit prefix pattern, e.g. feat: or feat(site):.
@@ -144,6 +143,9 @@ export_commit_metadata() {
 if [[ ${_COMMIT_METADATA_CACHE:-} == "${range}:"* ]]; then
 	eval "${_COMMIT_METADATA_CACHE#*:}"
 else
+	if [[ $ignore_missing_metadata == 1 ]]; then
+		log "WARNING: Ignoring missing commit metadata, breaking changes may be missed."
+	fi
 	main
 fi
 
