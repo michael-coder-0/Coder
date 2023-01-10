@@ -22,22 +22,34 @@
 # "feat(api)!:") or the PR that was merged can be tagged with the
 # "release/breaking" label.
 #
-# Usage: ./release.sh [--draft] [--dry-run] [--ref <ref>] [--major | --minor | --patch]
+# To test changes to this script, you can set `--branch <my-branch>`, which will
+# run the release workflow in CI as a dry-run and use the latest commit on the
+# specified branch as the release commit. This will also set --dry-run.
+#
+# Usage: ./release.sh [--branch <name>] [--draft] [--dry-run] [--ref <ref>] [--major | --minor | --patch]
 
 set -euo pipefail
 # shellcheck source=scripts/lib.sh
 source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 cdroot
 
+branch=main
 draft=0
 dry_run=0
 ref=
 increment=
 
-args="$(getopt -o n -l draft,dry-run,ref:,major,minor,patch -- "$@")"
+args="$(getopt -o n -l branch:,draft,dry-run,ref:,major,minor,patch -- "$@")"
 eval set -- "$args"
 while true; do
 	case "$1" in
+	--branch)
+		branch="$2"
+		log "Using branch $branch, implies DRYRUN and CODER_IGNORE_MISSING_COMMIT_METADATA."
+		dry_run=1
+		export CODER_IGNORE_MISSING_COMMIT_METADATA=1
+		shift 2
+		;;
 	--draft)
 		draft=1
 		shift
@@ -77,13 +89,13 @@ fi
 
 # Make sure the repository is up-to-date before generating release notes.
 log "Fetching main and tags from origin..."
-git fetch --quiet --tags origin main
+git fetch --quiet --tags origin "$branch"
 
 # Resolve to the latest ref on origin/main unless otherwise specified.
-ref=$(git rev-parse --short "${ref:-origin/main}")
+ref=$(git rev-parse --short "${ref:-origin/$branch}")
 
 # Make sure that we're running the latest release script.
-if [[ -n $(git diff --name-status origin/main -- ./scripts/release.sh) ]]; then
+if [[ -n $(git diff --name-status origin/"$branch" -- ./scripts/release.sh) ]]; then
 	error "Release script is out-of-date. Please check out the latest version and try again."
 fi
 
@@ -128,8 +140,9 @@ if ((dry_run)); then
 fi
 
 gh workflow run release.yaml \
-	--ref main \
+	--ref "$branch" \
 	-F increment="$increment" \
+	-F snapshot=false \
 	"${args[@]}"
 
 log "Release process started, you can watch the release via: gh run watch --exit-status <run-id>"
