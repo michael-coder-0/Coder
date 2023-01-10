@@ -5,7 +5,7 @@ set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/lib.sh"
 cdroot
 
-help() {
+usage() {
 	cat <<EOH
 Usage: ./release.sh [--branch <name>] [--draft] [--dry-run] [--ref <ref>] [--major | --minor | --patch]
 
@@ -63,7 +63,7 @@ while true; do
 		shift
 		;;
 	-h | --help)
-		help
+		usage
 		exit 0
 		;;
 	--ref)
